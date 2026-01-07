@@ -1,0 +1,220 @@
+---
+import BaseHead from "../../components/BaseHead.astro";
+import Header from "../../components/Header.astro";
+import Footer from "../../components/Footer.astro";
+import { SITE_TITLE, SITE_DESCRIPTION } from "../../consts";
+import { getCollection } from "astro:content";
+import "../../styles/learn.css";
+
+const entries = await getCollection("learn");
+const categories = [
+	{
+		name: "Who is Jesus",
+		description: "His identity, teachings, life, and claims. The question that changes everything.",
+		slug: "03-jesus-teachings-kingdom",
+		color: "accent"
+	},
+	{
+		name: "Understanding the Bible",
+		description: "Old and New Testament, interpretation, reliability. How to read Scripture with clarity.",
+		slug: "01-why-history-matters",
+		color: "accent"
+	},
+	{
+		name: "Evidence & Truth",
+		description: "Prophecies fulfilled, historical reliability, apologetics. How we know this is real.",
+		slug: "05-prophecy-fulfillment",
+		color: "accent"
+	},
+	{
+		name: "Other Religions",
+		description: "Comparisons with Judaism, Islam, denominations, world religions. Understanding differences with respect.",
+		slug: "07-world-religions-how-to-compare",
+		color: "accent"
+	},
+	{
+		name: "Following Jesus",
+		description: "Salvation, the gospel, discipleship, Christian life. What it means to walk with Him.",
+		slug: "02-what-is-the-gospel",
+		color: "accent"
+	},
+	{
+		name: "Common Questions",
+		description: "Objections, doubts, difficult topics. Honest answers to hard questions.",
+		slug: "06-hard-questions-atheist-arguments",
+		color: "accent"
+	}
+];
+
+const categoryCounts = categories.reduce((acc, cat) => {
+	const count = entries.filter(e => e.data.category === cat.name).length;
+	acc[cat.name] = count;
+	return acc;
+}, {} as Record<string, number>);
+---
+
+<!doctype html>
+<html lang="en">
+	<head>
+		<BaseHead title={`${SITE_TITLE} · Learn`} description={SITE_DESCRIPTION} />
+		<style>
+			main {
+				max-width: 1200px;
+				width: 100%;
+				padding: 4rem 1.5rem 6rem;
+			}
+
+			.hero {
+				text-align: center;
+				margin-bottom: 4rem;
+			}
+
+			.hero h1 {
+				font-size: clamp(2.5rem, 6vw, 4rem);
+				font-weight: 250;
+				letter-spacing: -0.03em;
+				margin-bottom: 1rem;
+			}
+
+			.hero p {
+				font-size: clamp(1.1rem, 2vw, 1.35rem);
+				color: rgb(var(--gray-dark));
+				max-width: 65ch;
+				margin: 0 auto 2rem;
+				line-height: 1.7;
+			}
+
+			.categories-grid {
+				display: grid;
+				grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+				gap: 1.5rem;
+				margin-top: 3rem;
+			}
+
+			.category-card {
+				display: block;
+				text-decoration: none;
+				color: inherit;
+				border-radius: 18px;
+				border: 1px solid rgba(var(--gray-light), 0.6);
+				background: rgba(var(--white), 0.95);
+				backdrop-filter: blur(12px);
+				padding: 2rem 1.75rem;
+				transition: all 200ms ease;
+				position: relative;
+				overflow: hidden;
+			}
+
+			.category-card::before {
+				content: "";
+				position: absolute;
+				top: 0;
+				left: 0;
+				right: 0;
+				height: 3px;
+				background: linear-gradient(90deg, var(--accent), var(--accent-light));
+				transform: scaleX(0);
+				transition: transform 200ms ease;
+			}
+
+			.category-card:hover {
+				transform: translateY(-4px);
+				border-color: rgba(var(--accent-light), 0.8);
+				box-shadow: 0 12px 32px rgba(var(--black), 0.1);
+			}
+
+			.category-card:hover::before {
+				transform: scaleX(1);
+			}
+
+			.category-card h2 {
+				margin: 0 0 0.75rem 0;
+				font-size: 1.5rem;
+				font-weight: 600;
+				color: rgb(var(--black));
+				letter-spacing: -0.02em;
+			}
+
+			.category-card p {
+				margin: 0 0 1rem 0;
+				color: rgb(var(--gray-dark));
+				line-height: 1.6;
+				font-size: 0.95rem;
+			}
+
+			.category-meta {
+				display: flex;
+				align-items: center;
+				gap: 0.5rem;
+				font-size: 0.85rem;
+				color: rgb(var(--gray));
+			}
+
+			.explore-link {
+				display: inline-block;
+				margin-top: 3rem;
+				padding: 0.875rem 1.5rem;
+				background: rgba(var(--accent-light), 0.1);
+				border: 1px solid rgba(var(--accent-light), 0.3);
+				border-radius: 10px;
+				color: var(--accent);
+				text-decoration: none;
+				font-weight: 500;
+				transition: all 200ms ease;
+			}
+
+			.explore-link:hover {
+				background: rgba(var(--accent-light), 0.15);
+				border-color: var(--accent);
+				transform: translateY(-2px);
+				box-shadow: 0 8px 20px rgba(var(--accent-light), 0.2);
+			}
+
+			@media (max-width: 720px) {
+				main {
+					padding: 3rem 1rem 4rem;
+				}
+
+				.categories-grid {
+					grid-template-columns: 1fr;
+					gap: 1.25rem;
+				}
+
+				.category-card {
+					padding: 1.5rem 1.25rem;
+				}
+			}
+		</style>
+	</head>
+	<body>
+		<Header />
+		<main>
+			<section class="hero">
+				<h1>Where Your Questions Find Answers</h1>
+				<p>
+					Every question matters. Every doubt deserves an honest answer. Here, we explore Scripture through 
+					history, context, and truth - because understanding leads to transformation.
+				</p>
+			</section>
+
+			<div class="categories-grid">
+				{categories.map((cat) => (
+					<a href={`/learn/${cat.slug}/`} class="category-card">
+						<h2>{cat.name}</h2>
+						<p>{cat.description}</p>
+						<div class="category-meta">
+							<span>{categoryCounts[cat.name] || 0} topics</span>
+						</div>
+					</a>
+				))}
+			</div>
+
+			<div style="text-align: center;">
+				<a href="/learn/explore" class="explore-link">
+					Explore all topics →
+				</a>
+			</div>
+		</main>
+		<Footer />
+	</body>
+</html>

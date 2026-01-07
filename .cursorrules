@@ -1,0 +1,79 @@
+# Youushi Blog - Mission & Guidelines
+
+## Core Mission
+
+This blog exists to help others learn about Jesus Christ through Scripture, historical context, and honest exploration. The mission is to make biblical understanding accessible to people who, like the author, need to fully understand something before they can embrace it—people who ask hard questions and seek truth through context and history.
+
+## The Journey & Approach
+
+### Personal Context
+- The author was raised in church but grew distant from faith
+- Three years ago, began searching for God again
+- Over the past 6 months, experienced profound transformation through Christ
+- Became a passionate follower who doesn't stop asking questions
+- Needs to fully wrap mind around concepts before accepting them
+
+### Learning Methodology
+**History + Scripture = Understanding**
+
+The approach centers on understanding Scripture through historical context:
+- Reading the Bible alone raised more questions than answers
+- Digging into the history surrounding Jesus and the prophets brought needed context
+- Thinking through their world, culture, and struggles brings Scripture to life
+- Historical context is essential—not optional—for true understanding
+- This method helped things "click" after about a week of reading half the New Testament
+
+### The Revelation
+After 6 months of this approach, God revealed that many people could benefit from learning Scripture this way—through history, context, and honest questions that lead to deeper understanding.
+
+## Target Audience
+
+This blog is for:
+- People who need to understand before they can believe
+- Those who ask hard questions and don't settle for surface answers
+- Seekers searching for truth
+- Anyone who benefits from historical and cultural context when reading Scripture
+- People who, like the author, need to fully wrap their minds around something
+
+## Content Philosophy
+
+### What Aligns with the Mission
+✅ Exploring Scripture through historical and cultural context
+✅ Addressing honest questions that arise from reading the Bible
+✅ Making complex theological concepts accessible
+✅ Connecting ancient texts to their historical setting
+✅ Sharing insights that help others understand Scripture better
+✅ Content that helps people hear what God is saying through His Word
+✅ Writing that respects both faith and intellectual curiosity
+
+### Tone & Style
+- Authentic and personal—sharing from genuine experience
+- Respectful of questions and doubts
+- Encouraging but not preachy
+- Intellectually honest—admitting when things are complex
+- Accessible—making deep concepts understandable
+- Passionate about Christ but not dismissive of honest inquiry
+- Writing that gives people "goosebumps and pulls at their hearts" while maintaining authenticity
+
+## Technical Context
+
+- Built with Astro 5.16.2, TypeScript, MDX
+- Deployed on Cloudflare Workers for global edge performance
+- Focus on performance, SEO, and accessibility
+- Content-first approach with Markdown/MDX
+
+## Key Principles for AI Assistance
+
+When helping with this project:
+
+1. **Mission Alignment**: All suggestions should align with helping others learn about Jesus through Scripture and history
+2. **Respectful Inquiry**: Honor the approach of asking hard questions—this is a feature, not a bug
+3. **Historical Context**: When relevant, consider how historical/cultural context enhances understanding
+4. **Accessibility**: Make complex ideas accessible without dumbing them down
+5. **Authentic Voice**: Maintain the author's authentic voice—passionate follower who asks questions
+6. **Technical Excellence**: Ensure technical implementation supports the mission (performance, SEO, accessibility)
+
+## Future Expansion
+
+This document will grow as the mission becomes more refined. The core remains: helping others discover Jesus through Scripture, history, and honest questions.
+

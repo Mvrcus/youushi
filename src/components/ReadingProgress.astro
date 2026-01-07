@@ -1,0 +1,40 @@
+---
+// Reading progress indicator component
+---
+
+<div class="reading-progress" id="reading-progress"></div>
+
+<script>
+	// Reading progress indicator
+	if (typeof window !== 'undefined') {
+		const progressBar = document.getElementById('reading-progress');
+		if (progressBar) {
+			const updateProgress = () => {
+				const windowHeight = window.innerHeight;
+				const documentHeight = document.documentElement.scrollHeight;
+				const scrollTop = window.scrollY || document.documentElement.scrollTop;
+				const progress = (scrollTop / (documentHeight - windowHeight)) * 100;
+				progressBar.style.width = `${Math.min(100, Math.max(0, progress))}%`;
+			};
+
+			window.addEventListener('scroll', updateProgress, { passive: true });
+			window.addEventListener('resize', updateProgress);
+			updateProgress();
+		}
+	}
+</script>
+
+<style>
+	.reading-progress {
+		position: fixed;
+		top: 0;
+		left: 0;
+		height: 2px;
+		width: 0%;
+		background: linear-gradient(90deg, var(--accent), var(--accent-light));
+		z-index: 1000;
+		transition: width 0.1s ease-out;
+		box-shadow: 0 0 10px rgba(var(--accent-light), 0.5);
+	}
+</style>
+

@@ -1,0 +1,626 @@
+---
+import type { CollectionEntry } from "astro:content";
+import BaseHead from "../components/BaseHead.astro";
+import Header from "../components/Header.astro";
+import Footer from "../components/Footer.astro";
+import ReadingProgress from "../components/ReadingProgress.astro";
+
+type Props = CollectionEntry<"learn">["data"] & { 
+	slug?: string;
+	allEntries?: CollectionEntry<"learn">[];
+	currentSlug?: string;
+};
+
+const { title, description, heroImage, category, tags, level, minutes, points, slug, allEntries, currentSlug } = Astro.props;
+
+// Get all entries in the same category, sorted
+const categoryEntries = (allEntries || [])
+	.filter(e => e.data.category === category)
+	.sort((a, b) => (a.data.title || "").localeCompare(b.data.title || ""));
+
+const totalEntries = categoryEntries.length;
+const totalMinutes = categoryEntries.reduce((sum, e) => sum + (e.data.minutes || 0), 0);
+const totalPoints = categoryEntries.reduce((sum, e) => sum + (e.data.points || 0), 0);
+---
+
+<html lang="en">
+	<head>
+		<BaseHead title={title} description={description} />
+		<style>
+			main {
+				width: 100%;
+				max-width: 100%;
+				margin: 0;
+				padding: 0;
+			}
+
+			/* Dark Header Section */
+			.category-header {
+				background: linear-gradient(135deg, #3d3244 0%, #4a3f52 100%);
+				color: rgb(var(--white));
+				padding: 1.5rem 0 2rem;
+			}
+
+			.category-header-inner {
+				max-width: 1400px;
+				margin: 0 auto;
+				padding: 0 1.5rem;
+			}
+
+			.breadcrumb {
+				font-size: 0.85rem;
+				color: rgba(255, 255, 255, 0.7);
+				margin-bottom: 1.5rem;
+			}
+
+			.breadcrumb a {
+				color: rgba(255, 255, 255, 0.85);
+				text-decoration: none;
+				transition: color 150ms ease;
+			}
+
+			.breadcrumb a:hover {
+				color: rgb(var(--white));
+			}
+
+			.breadcrumb span {
+				color: rgba(255, 255, 255, 0.6);
+			}
+
+			.header-content {
+				display: flex;
+				justify-content: space-between;
+				align-items: flex-start;
+				gap: 2rem;
+			}
+
+			.header-left {
+				flex: 1;
+			}
+
+			.header-title {
+				font-size: clamp(1.75rem, 4vw, 2.5rem);
+				font-weight: 600;
+				margin: 0 0 1rem 0;
+				color: rgb(var(--white));
+				line-height: 1.2;
+			}
+
+			.header-meta {
+				display: flex;
+				flex-wrap: wrap;
+				gap: 1.5rem;
+				margin-bottom: 1.25rem;
+				font-size: 0.9rem;
+				color: rgba(255, 255, 255, 0.8);
+			}
+
+			.meta-item {
+				display: flex;
+				align-items: center;
+				gap: 0.5rem;
+			}
+
+			.meta-icon {
+				opacity: 0.7;
+			}
+
+			.category-tags {
+				display: flex;
+				flex-wrap: wrap;
+				gap: 0.5rem;
+			}
+
+			.category-tag {
+				display: inline-block;
+				padding: 0.5rem 1rem;
+				background: rgba(255, 255, 255, 0.15);
+				border-radius: 8px;
+				color: rgb(var(--white));
+				font-size: 0.85rem;
+				font-weight: 500;
+			}
+
+			/* Main Content Area */
+			.content-container {
+				max-width: 1400px;
+				margin: 0 auto;
+				padding: 2rem 1.5rem 4rem;
+			}
+
+			.two-column {
+				display: grid;
+				grid-template-columns: 420px 1fr;
+				gap: 2rem;
+				align-items: start;
+			}
+
+			/* Left Column - Lessons List */
+			.lessons-panel {
+				background: rgba(var(--white), 0.98);
+				border: 1px solid rgba(var(--gray-light), 0.6);
+				border-radius: 18px;
+				box-shadow: 0 8px 32px rgba(var(--black), 0.08);
+				overflow: hidden;
+			}
+
+			.lessons-header {
+				padding: 1.5rem;
+				border-bottom: 1px solid rgba(var(--gray-light), 0.5);
+			}
+
+			.lessons-title {
+				display: flex;
+				align-items: center;
+				gap: 0.75rem;
+				margin: 0 0 0.5rem 0;
+			}
+
+			.lessons-icon {
+				width: 40px;
+				height: 40px;
+				border-radius: 10px;
+				background: linear-gradient(135deg, var(--accent), var(--accent-light));
+				display: flex;
+				align-items: center;
+				justify-content: center;
+				color: rgb(var(--white));
+				font-size: 1.25rem;
+			}
+
+			.lessons-title h2 {
+				font-size: 1.1rem;
+				font-weight: 600;
+				margin: 0;
+				color: rgb(var(--black));
+			}
+
+			.lessons-progress {
+				font-size: 0.85rem;
+				color: rgb(var(--gray));
+				display: flex;
+				align-items: center;
+				gap: 0.5rem;
+			}
+
+			.lessons-list {
+				padding: 0.75rem;
+			}
+
+			.lesson-item {
+				display: flex;
+				align-items: center;
+				justify-content: space-between;
+				padding: 1rem 1.25rem;
+				border-radius: 12px;
+				margin-bottom: 0.25rem;
+				text-decoration: none;
+				color: inherit;
+				transition: all 150ms ease;
+				border-left: 3px solid transparent;
+			}
+
+			.lesson-item:hover {
+				background: rgba(var(--gray-light), 0.3);
+			}
+
+			.lesson-item.current {
+				background: rgba(var(--accent-light), 0.1);
+				border-left-color: var(--accent);
+			}
+
+			.lesson-item.current .lesson-title {
+				color: var(--accent);
+				font-weight: 600;
+			}
+
+			.lesson-left {
+				display: flex;
+				align-items: center;
+				gap: 0.875rem;
+				flex: 1;
+				min-width: 0;
+			}
+
+			.lesson-icon {
+				width: 32px;
+				height: 32px;
+				border-radius: 8px;
+				background: rgba(var(--gray-light), 0.5);
+				display: flex;
+				align-items: center;
+				justify-content: center;
+				flex-shrink: 0;
+				color: rgb(var(--gray));
+				font-size: 0.8rem;
+			}
+
+			.lesson-item.current .lesson-icon {
+				background: rgba(var(--accent-light), 0.2);
+				color: var(--accent);
+			}
+
+			.lesson-info {
+				flex: 1;
+				min-width: 0;
+			}
+
+			.lesson-title {
+				font-size: 0.9rem;
+				font-weight: 500;
+				color: rgb(var(--black));
+				margin: 0 0 0.25rem 0;
+				white-space: nowrap;
+				overflow: hidden;
+				text-overflow: ellipsis;
+			}
+
+			.lesson-meta {
+				font-size: 0.8rem;
+				color: rgb(var(--gray));
+				display: flex;
+				align-items: center;
+				gap: 0.5rem;
+			}
+
+			.lesson-status {
+				width: 22px;
+				height: 22px;
+				border-radius: 50%;
+				border: 2px solid rgba(var(--gray-light), 0.8);
+				display: flex;
+				align-items: center;
+				justify-content: center;
+				flex-shrink: 0;
+				transition: all 150ms ease;
+			}
+
+			.lesson-status.read {
+				background: var(--accent);
+				border-color: var(--accent);
+			}
+
+			.lesson-status.read::after {
+				content: "✓";
+				color: rgb(var(--white));
+				font-size: 0.7rem;
+				font-weight: 600;
+			}
+
+			/* Right Column - Content */
+			.content-panel {
+				background: rgba(var(--white), 0.98);
+				border: 1px solid rgba(var(--gray-light), 0.6);
+				border-radius: 18px;
+				box-shadow: 0 8px 32px rgba(var(--black), 0.08);
+				overflow: hidden;
+			}
+
+			.content-header {
+				padding: 1.5rem 1.5rem 1rem;
+				border-bottom: 1px solid rgba(var(--gray-light), 0.4);
+			}
+
+			.content-header h1 {
+				font-size: 1.25rem;
+				font-weight: 600;
+				margin: 0 0 0.5rem 0;
+				color: rgb(var(--black));
+			}
+
+			.content-crumb {
+				font-size: 0.85rem;
+				color: rgb(var(--gray));
+			}
+
+			.content-crumb a {
+				color: rgb(var(--gray-dark));
+				text-decoration: none;
+			}
+
+			.content-crumb a:hover {
+				color: var(--accent);
+			}
+
+			.content-image {
+				width: 100%;
+				aspect-ratio: 16/9;
+				overflow: hidden;
+				background: rgba(var(--gray-light), 0.2);
+			}
+
+			.content-image img {
+				width: 100%;
+				height: 100%;
+				object-fit: cover;
+			}
+
+			.content-tabs {
+				display: flex;
+				gap: 0;
+				border-bottom: 1px solid rgba(var(--gray-light), 0.5);
+				padding: 0 1.5rem;
+			}
+
+			.tab {
+				padding: 1rem 1.5rem;
+				background: transparent;
+				border: none;
+				border-bottom: 2px solid transparent;
+				margin-bottom: -1px;
+				color: rgb(var(--gray-dark));
+				font-size: 0.95rem;
+				font-weight: 500;
+				cursor: pointer;
+				transition: all 150ms ease;
+			}
+
+			.tab:hover {
+				color: rgb(var(--black));
+			}
+
+			.tab.active {
+				color: var(--accent);
+				border-bottom-color: var(--accent);
+			}
+
+			.tab-content {
+				display: none;
+				padding: 1.5rem;
+			}
+
+			.tab-content.active {
+				display: block;
+			}
+
+			.prose {
+				font-size: 1rem;
+				line-height: 1.8;
+				color: rgb(var(--gray-dark));
+			}
+
+			.prose h2 {
+				font-size: 1.5rem;
+				font-weight: 600;
+				margin: 2rem 0 1rem 0;
+				color: rgb(var(--black));
+			}
+
+			.prose h3 {
+				font-size: 1.25rem;
+				font-weight: 600;
+				margin: 1.5rem 0 0.75rem 0;
+				color: rgb(var(--black));
+			}
+
+			.prose p {
+				margin-bottom: 1.25rem;
+			}
+
+			.prose ul, .prose ol {
+				margin-bottom: 1.25rem;
+				padding-left: 1.5rem;
+			}
+
+			.prose li {
+				margin-bottom: 0.5rem;
+			}
+
+			.prose strong {
+				font-weight: 600;
+				color: rgb(var(--black));
+			}
+
+			.prose blockquote {
+				border-left: 3px solid var(--accent);
+				padding-left: 1rem;
+				margin: 1.5rem 0;
+				font-style: italic;
+				color: rgb(var(--gray-dark));
+			}
+
+			@media (max-width: 1024px) {
+				.two-column {
+					grid-template-columns: 1fr;
+				}
+
+				.header-content {
+					flex-direction: column;
+				}
+			}
+
+			@media (max-width: 720px) {
+				.category-header {
+					padding: 1rem 0 1.5rem;
+				}
+
+				.header-meta {
+					gap: 1rem;
+				}
+			}
+		</style>
+	</head>
+	<body>
+		<ReadingProgress />
+		<Header />
+		<main>
+			<!-- Dark Header Section - Category Info -->
+			<section class="category-header">
+				<div class="category-header-inner">
+					<div class="breadcrumb">
+						<a href="/learn">Learn</a> &gt; <span>{category}</span>
+					</div>
+					<div class="header-content">
+						<div class="header-left">
+							<h1 class="header-title">{category}</h1>
+							<div class="header-meta">
+								<span class="meta-item">
+									<span class="meta-icon">⏱</span>
+									{totalMinutes} min total
+								</span>
+								<span class="meta-item">
+									<span class="meta-icon">📚</span>
+									{totalEntries} lessons
+								</span>
+								<span class="meta-item">
+									<span class="meta-icon">⭐</span>
+									{totalPoints} pts available
+								</span>
+							</div>
+						</div>
+					</div>
+				</div>
+			</section>
+
+			<!-- Main Content Area -->
+			<div class="content-container">
+				<div class="two-column">
+					<!-- Left Column - Lessons List -->
+					<div class="lessons-panel">
+						<div class="lessons-header">
+							<div class="lessons-title">
+								<div class="lessons-icon">📖</div>
+								<div>
+									<h2>{category}</h2>
+									<div class="lessons-progress" id="lessons-progress">
+										<span>⏳</span>
+										<span id="progress-text">0/{totalEntries} completed</span>
+									</div>
+								</div>
+							</div>
+						</div>
+						<div class="lessons-list">
+							{categoryEntries.map((entry) => (
+								<a 
+									href={`/learn/${entry.id}/`} 
+									class={`lesson-item ${entry.id === currentSlug ? 'current' : ''}`}
+									data-slug={`learn/${entry.id}`}
+								>
+									<div class="lesson-left">
+										<div class="lesson-icon">▶</div>
+										<div class="lesson-info">
+											<h3 class="lesson-title">{entry.data.title}</h3>
+											<div class="lesson-meta">
+												<span>⏱ {entry.data.minutes} min</span>
+											</div>
+										</div>
+									</div>
+									<div class="lesson-status" data-read="false"></div>
+								</a>
+							))}
+						</div>
+					</div>
+
+					<!-- Right Column - Content -->
+					<div class="content-panel">
+						<div class="content-header">
+							<h1>{title}</h1>
+							<div class="content-crumb">
+								<a href="/learn">Learn</a> &gt; <a href="/learn">{category}</a> &gt; Lesson
+							</div>
+						</div>
+
+						{heroImage && (
+							<div class="content-image">
+								<img src={heroImage} alt={title} />
+							</div>
+						)}
+
+						<div class="content-tabs">
+							<button class="tab active" data-tab="description">Description</button>
+							<button class="tab" data-tab="tags">Tags & Info</button>
+						</div>
+
+						<div class="tab-content active" id="description-tab">
+							<div class="prose">
+								<p style="margin-bottom: 1.5rem; font-size: 1.05rem; color: rgb(var(--gray-dark));">{description}</p>
+								<slot />
+							</div>
+						</div>
+
+						<div class="tab-content" id="tags-tab">
+							{tags && tags.length > 0 ? (
+								<div style="display: flex; flex-wrap: wrap; gap: 0.5rem; margin-bottom: 1.5rem;">
+									{tags.map((tag) => (
+										<span style="padding: 0.5rem 1rem; background: rgba(var(--gray-light), 0.4); border-radius: 999px; font-size: 0.9rem;">
+											#{tag}
+										</span>
+									))}
+								</div>
+							) : (
+								<p style="color: rgb(var(--gray));">No tags available.</p>
+							)}
+							<div style="margin-top: 1.5rem; padding-top: 1.5rem; border-top: 1px solid rgba(var(--gray-light), 0.5);">
+								<p style="font-size: 0.9rem; color: rgb(var(--gray-dark));"><strong>Level:</strong> {level}</p>
+								<p style="font-size: 0.9rem; color: rgb(var(--gray-dark));"><strong>Duration:</strong> {minutes} minutes</p>
+								<p style="font-size: 0.9rem; color: rgb(var(--gray-dark));"><strong>Points:</strong> {points}</p>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</main>
+		<Footer />
+
+		<script>
+			// Mark current entry as read
+			try {
+				const slug = window.location.pathname.replace(/^\/|\/$/g, "");
+				if (slug.startsWith("learn/")) {
+					const key = "youushi.learn.read";
+					const existing = JSON.parse(localStorage.getItem(key) || "[]");
+					if (!existing.includes(slug)) {
+						existing.push(slug);
+						localStorage.setItem(key, JSON.stringify(existing));
+					}
+				}
+			} catch {}
+
+			// Update progress and read status
+			document.addEventListener("DOMContentLoaded", () => {
+				const key = "youushi.learn.read";
+				const readSet = new Set(JSON.parse(localStorage.getItem(key) || "[]"));
+				
+				// Update lesson status indicators
+				const allLessons = document.querySelectorAll(".lesson-item");
+				let readCount = 0;
+				
+				allLessons.forEach((item) => {
+					const slug = item.getAttribute("data-slug");
+					const statusIndicator = item.querySelector(".lesson-status");
+					if (slug && readSet.has(slug)) {
+						readCount++;
+						if (statusIndicator) {
+							statusIndicator.classList.add("read");
+							statusIndicator.setAttribute("data-read", "true");
+						}
+					}
+				});
+
+				// Update progress text
+				const progressText = document.getElementById("progress-text");
+				const totalLessons = allLessons.length;
+				if (progressText) {
+					progressText.textContent = `${readCount}/${totalLessons} completed`;
+				}
+
+				// Tab switching
+				const tabs = document.querySelectorAll(".tab");
+				const tabContents = document.querySelectorAll(".tab-content");
+				
+				tabs.forEach((tab) => {
+					tab.addEventListener("click", () => {
+						const targetTab = tab.getAttribute("data-tab");
+						
+						tabs.forEach(t => t.classList.remove("active"));
+						tabContents.forEach(c => c.classList.remove("active"));
+						
+						tab.classList.add("active");
+						const content = document.getElementById(targetTab + "-tab");
+						if (content) content.classList.add("active");
+					});
+				});
+			});
+		</script>
+	</body>
+</html>

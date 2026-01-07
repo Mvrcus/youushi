@@ -3,6 +3,7 @@ import type { CollectionEntry } from 'astro:content';
 import BaseHead from '../components/BaseHead.astro';
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
+import ReadingProgress from '../components/ReadingProgress.astro';
 import FormattedDate from '../components/FormattedDate.astro';
 
 type Props = CollectionEntry<'blog'>['data'];
@@ -15,46 +16,167 @@ const { title, description, pubDate, updatedDate, heroImage } = Astro.props;
 		<BaseHead title={title} description={description} />
 		<style>
 			main {
-				width: calc(100% - 2em);
+				width: 100%;
 				max-width: 100%;
 				margin: 0;
+				padding: 0;
 			}
+
 			.hero-image {
 				width: 100%;
+				margin-bottom: 3rem;
+				position: relative;
+				overflow: hidden;
 			}
+
+			.hero-image::after {
+				content: '';
+				position: absolute;
+				bottom: 0;
+				left: 0;
+				right: 0;
+				height: 100px;
+				background: linear-gradient(to bottom, transparent, rgba(var(--white), 0.95));
+				pointer-events: none;
+			}
+
 			.hero-image img {
 				display: block;
 				margin: 0 auto;
-				border-radius: 12px;
-				box-shadow: var(--box-shadow);
+				border-radius: 0;
+				max-width: 100%;
+				width: 100%;
+				height: auto;
+				opacity: 0;
+				animation: fadeInScale 0.8s cubic-bezier(0.4, 0, 0.2, 1) forwards;
 			}
+
+			@keyframes fadeInScale {
+				from {
+					opacity: 0;
+					transform: scale(1.05);
+				}
+				to {
+					opacity: 1;
+					transform: scale(1);
+				}
+			}
+
 			.prose {
-				width: 720px;
-				max-width: calc(100% - 2em);
-				margin: auto;
-				padding: 1em;
+				width: 100%;
+				max-width: 720px;
+				margin: -2rem auto 0;
+				padding: 3rem 1.5rem;
 				color: rgb(var(--gray-dark));
+				background-color: rgba(var(--white), 0.95);
+				backdrop-filter: blur(20px);
+				border-radius: 24px 24px 0 0;
+				position: relative;
+				z-index: 1;
+				box-shadow: 0 -10px 40px rgba(var(--black), 0.05);
 			}
+
 			.title {
-				margin-bottom: 1em;
-				padding: 1em 0;
-				text-align: center;
-				line-height: 1;
+				margin-bottom: 2.5rem;
+				padding: 0;
+				text-align: left;
+				line-height: 1.2;
+				opacity: 0;
+				animation: slideUpFade 0.6s cubic-bezier(0.4, 0, 0.2, 1) 0.2s forwards;
 			}
+
+			@keyframes slideUpFade {
+				from {
+					opacity: 0;
+					transform: translateY(20px);
+				}
+				to {
+					opacity: 1;
+					transform: translateY(0);
+				}
+			}
+
 			.title h1 {
-				margin: 0 0 0.5em 0;
+				margin: 0 0 1rem 0;
+				text-align: left;
+				font-size: clamp(2rem, 5vw, 3.5rem);
+				font-weight: 300;
+				line-height: 1.2;
 			}
+
 			.date {
-				margin-bottom: 0.5em;
+				margin-bottom: 0.75rem;
 				color: rgb(var(--gray));
+				font-size: 0.95rem;
 			}
+
 			.last-updated-on {
 				font-style: italic;
+				font-size: 0.9rem;
+				color: rgb(var(--gray));
+			}
+
+			.prose > * {
+				opacity: 0;
+				animation: fadeIn 0.6s cubic-bezier(0.4, 0, 0.2, 1) 0.4s forwards;
+			}
+
+			.prose > *:nth-child(2) { animation-delay: 0.5s; }
+			.prose > *:nth-child(3) { animation-delay: 0.6s; }
+			.prose > *:nth-child(4) { animation-delay: 0.7s; }
+
+			@keyframes fadeIn {
+				from {
+					opacity: 0;
+				}
+				to {
+					opacity: 1;
+				}
+			}
+
+			article {
+				width: 100%;
+			}
+
+			.prose hr {
+				border: none;
+				height: 1px;
+				background: linear-gradient(90deg, transparent, rgba(var(--gray-light), 0.5), transparent);
+				margin: 2rem 0;
+			}
+
+			@media (max-width: 720px) {
+				.hero-image {
+					margin-bottom: 2rem;
+				}
+
+				.prose {
+					padding: 2rem 1rem;
+					border-radius: 20px 20px 0 0;
+				}
+
+				.title {
+					margin-bottom: 1.5rem;
+				}
+
+				.title h1 {
+					font-size: clamp(1.75rem, 6vw, 2.5rem);
+				}
+			}
+
+			@media (prefers-reduced-motion: reduce) {
+				.hero-image img,
+				.title,
+				.prose > * {
+					animation: none;
+					opacity: 1;
+				}
 			}
 		</style>
 	</head>
 
 	<body>
+		<ReadingProgress />
 		<Header />
 		<main>
 			<article>

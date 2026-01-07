@@ -1,0 +1,80 @@
+---
+const pathname = Astro.url?.pathname ?? "/";
+const isActive = (href: string) => {
+	if (href === "/") return pathname === "/";
+	return pathname.startsWith(href);
+};
+---
+
+<nav class="dock" aria-label="Primary">
+	<a class:list={["dock-link", isActive("/") && "active"]} href="/">
+		<span class="label">Home</span>
+	</a>
+	<a class:list={["dock-link", isActive("/learn") && "active"]} href="/learn">
+		<span class="label">Learn</span>
+	</a>
+	<a class:list={["dock-link", isActive("/blog") && "active"]} href="/blog">
+		<span class="label">Blog</span>
+	</a>
+	<a class:list={["dock-link", isActive("/about") && "active"]} href="/about">
+		<span class="label">About</span>
+	</a>
+</nav>
+
+<style>
+	.dock {
+		position: fixed;
+		left: 50%;
+		bottom: 18px;
+		transform: translateX(-50%);
+		z-index: 120;
+		display: flex;
+		gap: 0.25rem;
+		padding: 0.35rem;
+		border-radius: 999px;
+		border: 1px solid rgba(var(--gray-light), 0.35);
+		background: rgba(var(--white), 0.7);
+		backdrop-filter: blur(16px) saturate(160%);
+		-webkit-backdrop-filter: blur(16px) saturate(160%);
+		box-shadow: 0 14px 40px rgba(var(--black), 0.12);
+	}
+	.dock-link {
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		padding: 0.6rem 0.9rem;
+		border-radius: 999px;
+		text-decoration: none;
+		color: rgb(var(--gray-dark));
+		font-size: 0.9rem;
+		font-weight: 400;
+		transition: background 160ms ease, color 160ms ease;
+	}
+	.dock-link:hover {
+		background: rgba(var(--accent-light), 0.12);
+		color: var(--accent);
+	}
+	.dock-link.active {
+		background: rgba(var(--accent-light), 0.16);
+		color: var(--accent);
+		border: 1px solid rgba(var(--accent-light), 0.4);
+	}
+	@media (max-width: 720px) {
+		.dock {
+			width: calc(100% - 24px);
+			justify-content: space-between;
+		}
+		.dock-link {
+			flex: 1 1 auto;
+			padding: 0.7rem 0.5rem;
+			justify-content: center;
+		}
+	}
+	@media (prefers-reduced-motion: reduce) {
+		.dock-link {
+			transition: none;
+		}
+	}
+</style>
+
+

@@ -3,47 +3,666 @@ import BaseHead from '../components/BaseHead.astro';
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
 import { SITE_TITLE, SITE_DESCRIPTION } from '../consts';
+import { getCollection } from 'astro:content';
+
+const entries = await getCollection("learn");
+const featuredTopics = entries
+	.filter(e => e.data.level === "beginner")
+	.slice(0, 4);
+
+const categories = [
+	{
+		name: "Who is Jesus",
+		description: "His identity, teachings, life, and claims",
+		slug: "03-jesus-teachings-kingdom",
+		icon: "✝️"
+	},
+	{
+		name: "Understanding the Bible",
+		description: "Old and New Testament, interpretation",
+		slug: "01-why-history-matters",
+		icon: "📖"
+	},
+	{
+		name: "Evidence & Truth",
+		description: "Prophecies, historical reliability",
+		slug: "05-prophecy-fulfillment",
+		icon: "🔍"
+	},
+	{
+		name: "Following Jesus",
+		description: "Salvation, gospel, discipleship",
+		slug: "02-what-is-the-gospel",
+		icon: "👣"
+	},
+	{
+		name: "Common Questions",
+		description: "Objections, doubts, difficult topics",
+		slug: "06-hard-questions-atheist-arguments",
+		icon: "❓"
+	},
+	{
+		name: "Other Religions",
+		description: "Comparisons, denominations",
+		slug: "07-world-religions-how-to-compare",
+		icon: "🌍"
+	}
+];
+
+const whyFeatures = [
+	{
+		icon: `<svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 6.042A8.967 8.967 0 006 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 016 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 016-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0018 18a8.967 8.967 0 00-6 2.292m0-14.25v14.25"/></svg>`,
+		title: "Learn Anywhere",
+		description: "Access Scripture studies on any device, at your own pace"
+	},
+	{
+		icon: `<svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M9.879 7.519c1.171-1.025 3.071-1.025 4.242 0 1.172 1.025 1.172 2.687 0 3.712-.203.179-.43.326-.67.442-.745.361-1.45.999-1.45 1.827v.75M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-9 5.25h.008v.008H12v-.008z"/></svg>`,
+		title: "Ask Questions",
+		description: "No question is too hard. We tackle real doubts with honest answers"
+	},
+	{
+		icon: `<svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>`,
+		title: "Historical Context",
+		description: "Understand Scripture through the world it was written in"
+	},
+	{
+		icon: `<svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4.26 10.147a60.436 60.436 0 00-.491 6.347A48.627 48.627 0 0112 20.904a48.627 48.627 0 018.232-4.41 60.46 60.46 0 00-.491-6.347m-15.482 0a50.57 50.57 0 00-2.658-.813A59.905 59.905 0 0112 3.493a59.902 59.902 0 0110.399 5.84c-.896.248-1.783.52-2.658.814m-15.482 0A50.697 50.697 0 0112 13.489a50.702 50.702 0 017.74-3.342M6.75 15a.75.75 0 100-1.5.75.75 0 000 1.5zm0 0v-3.675A55.378 55.378 0 0112 8.443m-7.007 11.55A5.981 5.981 0 006.75 15.75v-1.5"/></svg>`,
+		title: "Structured Learning",
+		description: "Clear paths from beginner to deeper understanding"
+	},
+	{
+		icon: `<svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M9 12.75L11.25 15 15 9.75M21 12c0 1.268-.63 2.39-1.593 3.068a3.745 3.745 0 01-1.043 3.296 3.745 3.745 0 01-3.296 1.043A3.745 3.745 0 0112 21c-1.268 0-2.39-.63-3.068-1.593a3.746 3.746 0 01-3.296-1.043 3.745 3.745 0 01-1.043-3.296A3.745 3.745 0 013 12c0-1.268.63-2.39 1.593-3.068a3.745 3.745 0 011.043-3.296 3.746 3.746 0 013.296-1.043A3.746 3.746 0 0112 3c1.268 0 2.39.63 3.068 1.593a3.746 3.746 0 013.296 1.043 3.746 3.746 0 011.043 3.296A3.745 3.745 0 0121 12z"/></svg>`,
+		title: "Evidence Based",
+		description: "Prophecies, archaeology, and historical proof"
+	},
+	{
+		icon: `<svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12z"/></svg>`,
+		title: "Heart & Mind",
+		description: "Understanding that transforms both intellect and spirit"
+	}
+];
 ---
 
 <!doctype html>
 <html lang="en">
 	<head>
 		<BaseHead title={SITE_TITLE} description={SITE_DESCRIPTION} />
+		<style>
+			main {
+				padding: 0;
+				max-width: 100%;
+				overflow-x: hidden;
+			}
+
+			.container {
+				max-width: 1200px;
+				margin: 0 auto;
+				padding: 0 1.5rem;
+				width: 100%;
+				box-sizing: border-box;
+			}
+
+			/* Hero Section */
+			.hero {
+				padding: 4rem 0 6rem;
+				position: relative;
+			}
+
+			.hero-inner {
+				display: grid;
+				grid-template-columns: 1fr 1fr;
+				gap: 4rem;
+				align-items: center;
+			}
+
+			.hero-text h1 {
+				font-size: clamp(2.5rem, 5vw, 3.5rem);
+				font-weight: 700;
+				margin: 0 0 1rem 0;
+				line-height: 1.15;
+				color: rgb(var(--black));
+			}
+
+			.hero-text h1 span {
+				color: var(--accent);
+			}
+
+			.hero-underline {
+				width: 60px;
+				height: 4px;
+				background: var(--accent);
+				border-radius: 2px;
+				margin-bottom: 1.5rem;
+			}
+
+			.hero-text p {
+				font-size: 1.1rem;
+				color: rgb(var(--gray-dark));
+				margin: 0 0 2rem 0;
+				line-height: 1.7;
+				max-width: 480px;
+			}
+
+			.hero-cta {
+				display: inline-flex;
+				align-items: center;
+				gap: 0.75rem;
+				padding: 1rem 2rem;
+				background: var(--accent);
+				border: none;
+				border-radius: 8px;
+				color: white;
+				text-decoration: none;
+				font-weight: 600;
+				font-size: 1rem;
+				transition: all 200ms ease;
+				box-shadow: 0 4px 14px rgba(59, 130, 246, 0.4);
+			}
+
+			.hero-cta:hover {
+				transform: translateY(-2px);
+				box-shadow: 0 6px 20px rgba(59, 130, 246, 0.5);
+			}
+
+			.hero-image-wrapper {
+				position: relative;
+				display: flex;
+				justify-content: center;
+				align-items: center;
+			}
+
+			.hero-blob {
+				position: absolute;
+				width: 110%;
+				height: 110%;
+				background: linear-gradient(135deg, #60a5fa 0%, #3b82f6 50%, #2563eb 100%);
+				border-radius: 60% 40% 50% 50% / 50% 60% 40% 50%;
+				animation: blob-morph 8s ease-in-out infinite;
+				z-index: 0;
+				opacity: 0.9;
+			}
+
+			@keyframes blob-morph {
+				0%, 100% {
+					border-radius: 60% 40% 50% 50% / 50% 60% 40% 50%;
+					transform: rotate(0deg) scale(1);
+				}
+				33% {
+					border-radius: 40% 60% 60% 40% / 60% 40% 60% 40%;
+					transform: rotate(5deg) scale(1.02);
+				}
+				66% {
+					border-radius: 50% 50% 40% 60% / 40% 50% 50% 60%;
+					transform: rotate(-5deg) scale(0.98);
+				}
+			}
+
+			.hero-image {
+				position: relative;
+				z-index: 1;
+				width: 90%;
+				max-width: 420px;
+				border-radius: 20px;
+				overflow: hidden;
+			}
+
+			.hero-image img {
+				width: 100%;
+				height: auto;
+				display: block;
+			}
+
+			/* Why Section */
+			.why-section {
+				padding: 5rem 0;
+			}
+
+			.section-title {
+				text-align: center;
+				margin-bottom: 3rem;
+			}
+
+			.section-title h2 {
+				font-size: clamp(1.75rem, 3.5vw, 2.25rem);
+				font-weight: 600;
+				margin: 0 0 0.5rem 0;
+				color: rgb(var(--black));
+			}
+
+			.section-title p {
+				font-size: 1rem;
+				color: rgb(var(--gray));
+				margin: 0;
+			}
+
+			.why-grid {
+				display: grid;
+				grid-template-columns: repeat(3, 1fr);
+				gap: 2rem 3rem;
+			}
+
+			.why-card {
+				display: flex;
+				gap: 1rem;
+				align-items: flex-start;
+			}
+
+			.why-icon {
+				flex-shrink: 0;
+				width: 56px;
+				height: 56px;
+				background: rgba(var(--accent-light), 0.15);
+				border-radius: 12px;
+				display: flex;
+				align-items: center;
+				justify-content: center;
+				color: var(--accent);
+			}
+
+			.why-content h3 {
+				font-size: 1.1rem;
+				font-weight: 600;
+				margin: 0 0 0.5rem 0;
+				color: rgb(var(--black));
+			}
+
+			.why-content p {
+				font-size: 0.9rem;
+				color: rgb(var(--gray-dark));
+				margin: 0;
+				line-height: 1.6;
+			}
+
+			/* Courses Section */
+			.courses-section {
+				padding: 5rem 0;
+				background: rgba(var(--gray-light), 0.2);
+			}
+
+			.section-header {
+				display: flex;
+				justify-content: space-between;
+				align-items: flex-end;
+				margin-bottom: 2rem;
+			}
+
+			.section-header h2 {
+				font-size: clamp(1.75rem, 3.5vw, 2.25rem);
+				font-weight: 600;
+				margin: 0;
+				color: rgb(var(--black));
+			}
+
+			.section-header a {
+				color: var(--accent);
+				text-decoration: none;
+				font-weight: 500;
+				font-size: 0.95rem;
+				display: flex;
+				align-items: center;
+				gap: 0.25rem;
+			}
+
+			.section-header a:hover {
+				text-decoration: underline;
+			}
+
+			.courses-grid {
+				display: grid;
+				grid-template-columns: repeat(4, 1fr);
+				gap: 1.5rem;
+			}
+
+			.course-card {
+				background: rgb(var(--white));
+				border-radius: 16px;
+				overflow: hidden;
+				text-decoration: none;
+				color: inherit;
+				transition: all 200ms ease;
+				border: 1px solid rgba(var(--gray-light), 0.6);
+			}
+
+			.course-card:hover {
+				transform: translateY(-4px);
+				box-shadow: 0 12px 32px rgba(var(--black), 0.12);
+			}
+
+			.course-thumb {
+				aspect-ratio: 16/10;
+				overflow: hidden;
+				background: rgba(var(--gray-light), 0.3);
+			}
+
+			.course-thumb img {
+				width: 100%;
+				height: 100%;
+				object-fit: cover;
+				transition: transform 300ms ease;
+			}
+
+			.course-card:hover .course-thumb img {
+				transform: scale(1.05);
+			}
+
+			.course-info {
+				padding: 1.25rem;
+			}
+
+			.course-info h3 {
+				font-size: 1rem;
+				font-weight: 600;
+				margin: 0 0 0.5rem 0;
+				color: rgb(var(--black));
+				line-height: 1.4;
+				display: -webkit-box;
+				-webkit-line-clamp: 2;
+				-webkit-box-orient: vertical;
+				overflow: hidden;
+			}
+
+			.course-meta {
+				display: flex;
+				align-items: center;
+				gap: 1rem;
+				font-size: 0.8rem;
+				color: rgb(var(--gray));
+			}
+
+			.course-meta span {
+				display: flex;
+				align-items: center;
+				gap: 0.25rem;
+			}
+
+			.course-tag {
+				display: inline-block;
+				padding: 0.25rem 0.75rem;
+				background: rgba(var(--accent-light), 0.15);
+				color: var(--accent);
+				border-radius: 20px;
+				font-size: 0.75rem;
+				font-weight: 500;
+				margin-top: 0.75rem;
+			}
+
+			/* Categories Section */
+			.categories-section {
+				padding: 5rem 0;
+			}
+
+			.categories-grid {
+				display: grid;
+				grid-template-columns: repeat(6, 1fr);
+				gap: 1rem;
+			}
+
+			.category-card {
+				background: rgb(var(--white));
+				border: 1px solid rgba(var(--gray-light), 0.6);
+				border-radius: 12px;
+				padding: 1.5rem 1rem;
+				text-align: center;
+				text-decoration: none;
+				color: inherit;
+				transition: all 200ms ease;
+			}
+
+			.category-card:hover {
+				border-color: var(--accent);
+				background: rgba(var(--accent-light), 0.05);
+				transform: translateY(-2px);
+			}
+
+			.category-icon {
+				font-size: 2rem;
+				margin-bottom: 0.75rem;
+			}
+
+			.category-card h3 {
+				font-size: 0.9rem;
+				font-weight: 600;
+				margin: 0 0 0.35rem 0;
+				color: rgb(var(--black));
+			}
+
+			.category-card p {
+				font-size: 0.75rem;
+				color: rgb(var(--gray));
+				margin: 0;
+				line-height: 1.4;
+			}
+
+			/* CTA Section */
+			.cta-section {
+				padding: 5rem 0;
+				background: linear-gradient(135deg, #1e3a5f 0%, #0f172a 100%);
+				color: white;
+				text-align: center;
+			}
+
+			.cta-content h2 {
+				font-size: clamp(2rem, 4vw, 2.75rem);
+				font-weight: 700;
+				margin: 0 0 1rem 0;
+			}
+
+			.cta-content h2 span {
+				color: #60a5fa;
+			}
+
+			.cta-content p {
+				font-size: 1.1rem;
+				opacity: 0.8;
+				margin: 0 0 2rem 0;
+				max-width: 500px;
+				margin-left: auto;
+				margin-right: auto;
+			}
+
+			.cta-button {
+				display: inline-flex;
+				align-items: center;
+				gap: 0.5rem;
+				padding: 1rem 2.5rem;
+				background: var(--accent);
+				border: none;
+				border-radius: 8px;
+				color: white;
+				text-decoration: none;
+				font-weight: 600;
+				font-size: 1rem;
+				transition: all 200ms ease;
+			}
+
+			.cta-button:hover {
+				transform: translateY(-2px);
+				box-shadow: 0 8px 24px rgba(59, 130, 246, 0.4);
+			}
+
+			/* Responsive */
+			@media (max-width: 1024px) {
+				.hero-inner {
+					grid-template-columns: 1fr;
+					gap: 3rem;
+					text-align: center;
+				}
+
+				.hero-text p {
+					max-width: 100%;
+				}
+
+				.hero-image-wrapper {
+					order: -1;
+					max-width: 400px;
+					margin: 0 auto;
+				}
+
+				.why-grid {
+					grid-template-columns: repeat(2, 1fr);
+				}
+
+				.courses-grid {
+					grid-template-columns: repeat(2, 1fr);
+				}
+
+				.categories-grid {
+					grid-template-columns: repeat(3, 1fr);
+				}
+			}
+
+			@media (max-width: 720px) {
+				.hero {
+					padding: 2rem 0 4rem;
+				}
+
+				.hero-underline {
+					margin-left: auto;
+					margin-right: auto;
+				}
+
+				.why-grid {
+					grid-template-columns: 1fr;
+					gap: 1.5rem;
+				}
+
+				.why-card {
+					flex-direction: column;
+					text-align: center;
+					align-items: center;
+				}
+
+				.courses-grid {
+					grid-template-columns: 1fr;
+				}
+
+				.categories-grid {
+					grid-template-columns: repeat(2, 1fr);
+				}
+
+				.section-header {
+					flex-direction: column;
+					align-items: flex-start;
+					gap: 0.5rem;
+				}
+			}
+		</style>
 	</head>
 	<body>
 		<Header />
 		<main>
-			<h1>🧑‍🚀 Hello, Astronaut!</h1>
-			<p>
-				Welcome to the official <a href="https://astro.build/">Astro</a> blog starter template. This
-				template serves as a lightweight, minimally-styled starting point for anyone looking to build
-				a personal website, blog, or portfolio with Astro.
-			</p>
-			<p>
-				This template comes with a few integrations already configured in your
-				<code>astro.config.mjs</code> file. You can customize your setup with
-				<a href="https://astro.build/integrations">Astro Integrations</a> to add tools like Tailwind,
-				React, or Vue to your project.
-			</p>
-			<p>Here are a few ideas on how to get started with the template:</p>
-			<ul>
-				<li>Edit this page in <code>src/pages/index.astro</code></li>
-				<li>Edit the site header items in <code>src/components/Header.astro</code></li>
-				<li>Add your name to the footer in <code>src/components/Footer.astro</code></li>
-				<li>Check out the included blog posts in <code>src/content/blog/</code></li>
-				<li>Customize the blog post page layout in <code>src/layouts/BlogPost.astro</code></li>
-			</ul>
-			<p>
-				Have fun! If you get stuck, remember to <a href="https://docs.astro.build/"
-					>read the docs
-				</a> or <a href="https://astro.build/chat">join us on Discord</a> to ask questions.
-			</p>
-			<p>
-				Looking for a blog template with a bit more personality? Check out <a
-					href="https://github.com/Charca/astro-blog-template"
-					>astro-blog-template
-				</a> by <a href="https://twitter.com/Charca">Maxi Ferreira</a>.
-			</p>
+			<!-- Hero Section -->
+			<section class="hero">
+				<div class="container">
+					<div class="hero-inner">
+						<div class="hero-text">
+							<h1>Discover the <span>Truth</span> About Jesus</h1>
+							<div class="hero-underline"></div>
+							<p>
+								Explore Scripture through history, context, and honest questions. 
+								Every question matters. Every doubt deserves an answer.
+							</p>
+							<a href="/learn/03-jesus-teachings-kingdom/" class="hero-cta">
+								Start Learning
+								<svg width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden="true">
+									<path d="M7.5 15L12.5 10L7.5 5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+								</svg>
+							</a>
+						</div>
+						<div class="hero-image-wrapper">
+							<div class="hero-blob"></div>
+							<div class="hero-image">
+								<img src="/good-shepherd.png" alt="The Good Shepherd" />
+							</div>
+						</div>
+					</div>
+				</div>
+			</section>
+
+			<!-- Why YouUsHi Section -->
+			<section class="why-section">
+				<div class="container">
+					<div class="section-title">
+						<h2>Why YouUsHi?</h2>
+						<p>Learn Scripture the way it was meant to be understood</p>
+					</div>
+					<div class="why-grid">
+						{whyFeatures.map((feature) => (
+							<div class="why-card">
+								<div class="why-icon" set:html={feature.icon} />
+								<div class="why-content">
+									<h3>{feature.title}</h3>
+									<p>{feature.description}</p>
+								</div>
+							</div>
+						))}
+					</div>
+				</div>
+			</section>
+
+			<!-- Featured Courses Section -->
+			<section class="courses-section">
+				<div class="container">
+					<div class="section-header">
+						<h2>Start Your Journey</h2>
+						<a href="/learn">
+							View all topics →
+						</a>
+					</div>
+					<div class="courses-grid">
+						{featuredTopics.map((topic) => (
+							<a href={`/learn/${topic.id}/`} class="course-card">
+								<div class="course-thumb">
+									<img src={topic.data.heroImage || "/jesus.png"} alt={topic.data.title} />
+								</div>
+								<div class="course-info">
+									<h3>{topic.data.title}</h3>
+									<div class="course-meta">
+										<span>⏱ {topic.data.minutes} min</span>
+										<span>⭐ {topic.data.points} pts</span>
+									</div>
+									<span class="course-tag">{topic.data.category}</span>
+								</div>
+							</a>
+						))}
+					</div>
+				</div>
+			</section>
+
+			<!-- Categories Section -->
+			<section class="categories-section">
+				<div class="container">
+					<div class="section-title">
+						<h2>Explore by Category</h2>
+						<p>Find answers to the questions you're asking</p>
+					</div>
+					<div class="categories-grid">
+						{categories.map((cat) => (
+							<a href={`/learn/${cat.slug}/`} class="category-card">
+								<div class="category-icon">{cat.icon}</div>
+								<h3>{cat.name}</h3>
+								<p>{cat.description}</p>
+							</a>
+						))}
+					</div>
+				</div>
+			</section>
+
+			<!-- CTA Section -->
+			<section class="cta-section">
+				<div class="container">
+					<div class="cta-content">
+						<h2 style="color: white;">Join <span>Thousands</span> Seeking Truth</h2>
+						<p>Start exploring Scripture through history, context, and honest questions today.</p>
+						<a href="/learn" class="cta-button">
+							Explore All Topics
+							<svg width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden="true">
+								<path d="M7.5 15L12.5 10L7.5 5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+							</svg>
+						</a>
+					</div>
+				</div>
+			</section>
 		</main>
 		<Footer />
 	</body>

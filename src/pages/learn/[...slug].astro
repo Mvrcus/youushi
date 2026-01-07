@@ -1,0 +1,22 @@
+---
+import { type CollectionEntry, getCollection, render } from "astro:content";
+import LearnEntry from "../../layouts/LearnEntry.astro";
+
+export async function getStaticPaths() {
+	const entries = await getCollection("learn");
+	return entries.map((entry) => ({
+		params: { slug: entry.id },
+		props: { entry, allEntries: entries },
+	}));
+}
+
+type Props = { entry: CollectionEntry<"learn">; allEntries: CollectionEntry<"learn">[] };
+const { entry, allEntries } = Astro.props;
+const { Content } = await render(entry);
+---
+
+<LearnEntry {...entry.data} slug={entry.id} allEntries={allEntries} currentSlug={entry.id}>
+	<Content />
+</LearnEntry>
+
+

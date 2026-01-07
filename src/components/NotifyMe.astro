@@ -1,0 +1,123 @@
+---
+// Lightweight opt-in UI (local-only placeholder). Hook to email/WebPush later.
+// This keeps it easy to find without pushing it in people’s faces.
+---
+
+<section class="notify" aria-labelledby="notify-title">
+	<div class="notify-inner">
+		<div class="copy">
+			<h3 id="notify-title">Get notified when new notes drop</h3>
+			<p class="sub">
+				Optional. No spam. Just a heads up when something new gets added to the library.
+			</p>
+		</div>
+		<details class="details">
+			<summary>Notify me</summary>
+			<form class="form" id="notify-form">
+				<label class="sr-only" for="notify-email">Email</label>
+				<input id="notify-email" name="email" type="email" autocomplete="email" placeholder="you@example.com" required />
+				<button type="submit">Save</button>
+				<p class="hint" id="notify-hint">Saved on this device for now. We’ll wire real email/push next.</p>
+			</form>
+		</details>
+	</div>
+</section>
+
+<script>
+	try {
+		const form = document.getElementById("notify-form");
+		form?.addEventListener("submit", (e) => {
+			e.preventDefault();
+			const input = document.getElementById("notify-email");
+			const email = input?.value?.trim();
+			if (!email) return;
+			localStorage.setItem("youushi.notify.email", email);
+			input.value = "";
+			const hint = document.getElementById("notify-hint");
+			if (hint) hint.textContent = "Saved. We’ll make this real soon.";
+		});
+	} catch {}
+</script>
+
+<style>
+	.notify {
+		margin: 3rem 0 0;
+	}
+	.notify-inner {
+		display: flex;
+		gap: 1.25rem;
+		align-items: center;
+		justify-content: space-between;
+		padding: 1.25rem 1.25rem;
+		border-radius: 16px;
+		border: 1px solid rgba(var(--gray-light), 0.35);
+		background: rgba(var(--white), 0.7);
+		backdrop-filter: blur(14px) saturate(160%);
+	}
+	h3 {
+		margin: 0 0 0.25rem 0;
+		font-size: 1.1rem;
+		font-weight: 500;
+	}
+	.sub {
+		margin: 0;
+		color: rgb(var(--gray));
+		font-size: 0.95rem;
+	}
+	.details summary {
+		cursor: pointer;
+		list-style: none;
+		user-select: none;
+		padding: 0.6rem 0.9rem;
+		border-radius: 999px;
+		border: 1px solid rgba(var(--accent-light), 0.35);
+		background: rgba(var(--accent-light), 0.08);
+		color: var(--accent);
+		font-weight: 500;
+	}
+	.details[open] summary {
+		margin-bottom: 0.75rem;
+	}
+	.form {
+		display: grid;
+		grid-template-columns: 1fr auto;
+		gap: 0.5rem;
+		min-width: 320px;
+	}
+	input {
+		border-radius: 10px;
+		border: 1px solid rgba(var(--gray-light), 0.6);
+		padding: 0.75rem 0.9rem;
+		background: rgba(var(--white), 0.85);
+	}
+	button {
+		border-radius: 10px;
+		border: 1px solid rgba(var(--accent-light), 0.5);
+		background: rgba(var(--accent-light), 0.14);
+		color: var(--accent);
+		padding: 0.75rem 0.9rem;
+		font-weight: 600;
+		cursor: pointer;
+	}
+	button:hover {
+		background: rgba(var(--accent-light), 0.2);
+	}
+	.hint {
+		grid-column: 1 / -1;
+		margin: 0.25rem 0 0;
+		color: rgb(var(--gray));
+		font-size: 0.85rem;
+		opacity: 0.85;
+	}
+	@media (max-width: 720px) {
+		.notify-inner {
+			flex-direction: column;
+			align-items: stretch;
+		}
+		.form {
+			min-width: 0;
+		}
+	}
+</style>
+
+

@@ -1,0 +1,315 @@
+---
+import BaseHead from "../../components/BaseHead.astro";
+import Header from "../../components/Header.astro";
+import Footer from "../../components/Footer.astro";
+import NotifyMe from "../../components/NotifyMe.astro";
+import { SITE_TITLE, SITE_DESCRIPTION } from "../../consts";
+import { getCollection } from "astro:content";
+import "../../styles/learn.css";
+
+const entries = (await getCollection("learn")).sort((a, b) =>
+	(a.data.title || "").localeCompare(b.data.title || ""),
+);
+
+const payload = entries.map((e) => ({
+	slug: e.id,
+	title: e.data.title,
+	description: e.data.description,
+	category: e.data.category,
+	tags: e.data.tags ?? [],
+	level: e.data.level,
+	minutes: e.data.minutes,
+	points: e.data.points,
+	heroImage: e.data.heroImage ?? "/cross.png",
+}));
+
+const categories = Array.from(new Set(payload.map((p) => p.category))).sort((a, b) => a.localeCompare(b));
+---
+
+<!doctype html>
+<html lang="en">
+	<head>
+		<BaseHead title={`${SITE_TITLE} · Explore`} description={SITE_DESCRIPTION} />
+	</head>
+	<body>
+		<Header />
+		<main>
+			<section class="header">
+				<h1>Explore All Topics</h1>
+				<p>
+					Search, filter, and explore at your own pace. Every question deserves an honest answer.
+				</p>
+			</section>
+
+			<div class="shell" id="learn-shell">
+				<aside class="panel" aria-label="Learn filters">
+					<div class="search">
+						<input id="learn-q" type="search" placeholder="Search topics…" />
+						<div class="kbd">
+							Tip: press <kbd>/</kbd> to focus search.
+						</div>
+					</div>
+
+					<div class="filter-group">
+						<label class="filter-label">Category</label>
+						<div class="chips" id="learn-cats">
+							<button class="chip" data-cat="" data-active="true" type="button">All</button>
+							{categories.map((c) => (
+								<button class="chip" data-cat={c} data-active="false" type="button">{c}</button>
+							))}
+						</div>
+					</div>
+
+					<details class="filter-details">
+						<summary class="filter-summary">
+							<span>More Filters</span>
+							<svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+								<path d="M4 6L8 10L12 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+							</svg>
+						</summary>
+						<div class="filter-details-content">
+							<div class="filter-group">
+								<label class="filter-label">Difficulty</label>
+								<div class="segmented" id="learn-level" role="group" aria-label="Difficulty filter">
+									<button class="segmented-button" data-level="" data-active="true" type="button">All</button>
+									<button class="segmented-button" data-level="beginner" data-active="false" type="button">Beginner</button>
+									<button class="segmented-button" data-level="intermediate" data-active="false" type="button">Intermediate</button>
+									<button class="segmented-button" data-level="advanced" data-active="false" type="button">Advanced</button>
+								</div>
+							</div>
+
+							<div class="filter-group">
+								<label class="filter-label">Length</label>
+								<div class="segmented" id="learn-length" role="group" aria-label="Length filter">
+									<button class="segmented-button" data-length="" data-active="true" type="button">All</button>
+									<button class="segmented-button" data-length="quick" data-active="false" type="button">Quick</button>
+									<button class="segmented-button" data-length="medium" data-active="false" type="button">Medium</button>
+									<button class="segmented-button" data-length="long" data-active="false" type="button">Long</button>
+								</div>
+							</div>
+
+							<div class="filter-group">
+								<label class="filter-label">Points</label>
+								<div class="segmented" id="learn-points" role="group" aria-label="Points filter">
+									<button class="segmented-button" data-points="" data-active="true" type="button">All</button>
+									<button class="segmented-button" data-points="low" data-active="false" type="button">Low</button>
+									<button class="segmented-button" data-points="medium" data-active="false" type="button">Medium</button>
+									<button class="segmented-button" data-points="high" data-active="false" type="button">High</button>
+								</div>
+							</div>
+						</div>
+					</details>
+
+					<div class="progress" aria-live="polite">
+						<div class="row">
+							<div><strong id="learn-xp">0</strong> pts</div>
+							<div class="kbd"><span id="learn-read">0</span> / {payload.length} read</div>
+						</div>
+						<div class="bar" aria-hidden="true"><div id="learn-bar"></div></div>
+					</div>
+
+					<NotifyMe />
+				</aside>
+
+				<section aria-label="Learn results">
+					<div class="grid" id="learn-grid">
+						{payload.map((it) => (
+							<a class="card" href={`/learn/${it.slug}/`}>
+								<div class="topline">
+									<div class="badges">
+										<span class="badge">{it.category}</span>
+										<span class="badge level">{it.level}</span>
+										<span class="badge">{it.minutes} min</span>
+										<span class="badge">{it.points} pts</span>
+									</div>
+									<div class="read"></div>
+								</div>
+								<h3>{it.title}</h3>
+								<p>{it.description}</p>
+							</a>
+						))}
+					</div>
+					<div class="empty" id="learn-empty" style="display:none;">
+						No matches. Try adjusting your filters or search terms.
+					</div>
+				</section>
+			</div>
+		</main>
+		<Footer />
+
+		<script type="application/json" id="learn-data" set:html={JSON.stringify(payload)}></script>
+		<script>
+			type LearnEntry = {
+				slug: string;
+				title: string;
+				description: string;
+				category: string;
+				tags: string[];
+				level: string;
+				minutes: number;
+				points: number;
+				heroImage?: string;
+			};
+
+			const dataEl = document.getElementById("learn-data");
+			const qEl = document.getElementById("learn-q") as HTMLInputElement | null;
+			const gridEl = document.getElementById("learn-grid");
+			const emptyEl = document.getElementById("learn-empty");
+			const catsEl = document.getElementById("learn-cats");
+			const levelEl = document.getElementById("learn-level");
+			const lengthEl = document.getElementById("learn-length");
+			const pointsEl = document.getElementById("learn-points");
+			const xpEl = document.getElementById("learn-xp");
+			const readEl = document.getElementById("learn-read");
+			const barEl = document.getElementById("learn-bar");
+
+			if (dataEl && qEl && gridEl && emptyEl && catsEl && levelEl && lengthEl && pointsEl && xpEl && readEl && barEl) {
+				const qInput = qEl as HTMLInputElement;
+				const grid = gridEl as HTMLElement;
+				const empty = emptyEl as HTMLElement;
+				const cats = catsEl as HTMLElement;
+				const levelChips = levelEl as HTMLElement;
+				const lengthChips = lengthEl as HTMLElement;
+				const pointsChips = pointsEl as HTMLElement;
+				const xpNode = xpEl as HTMLElement;
+				const readNode = readEl as HTMLElement;
+				const bar = barEl as HTMLElement;
+
+				const key = "youushi.learn.read";
+				const readSet = new Set<string>(JSON.parse(localStorage.getItem(key) || "[]"));
+
+				let items: LearnEntry[] = [];
+				try {
+					items = JSON.parse(dataEl.textContent || "[]");
+				} catch (err) {
+					console.error("Learn data JSON parse failed", err);
+					items = [];
+				}
+				let activeCat = "";
+				let activeLevel = "";
+				let activeLength = "";
+				let activePoints = "";
+
+				function computeXP(list: LearnEntry[]) {
+					let xp = 0;
+					for (const it of list) {
+						const slug = `learn/${it.slug}`.replace(/\/+$/, "");
+						if (readSet.has(slug)) xp += Number(it.points || 0);
+					}
+					return xp;
+				}
+
+				function render(list: LearnEntry[]) {
+					grid.innerHTML = "";
+					const xp = computeXP(items);
+					xpNode.textContent = String(xp);
+					readNode.textContent = String(readSet.size);
+					const pct = Math.round((readSet.size / items.length) * 100);
+					bar.style.width = `${isFinite(pct) ? pct : 0}%`;
+
+					if (!list.length) {
+						empty.style.display = "";
+						return;
+					}
+					empty.style.display = "none";
+
+					for (const it of list) {
+						const a = document.createElement("a");
+						a.className = "card";
+						a.href = `/learn/${it.slug}/`;
+						const slugKey = `learn/${it.slug}`;
+						const isRead = readSet.has(slugKey);
+						a.innerHTML = `
+							<div class="topline">
+								<div class="badges">
+									<span class="badge">${it.category}</span>
+									<span class="badge level">${it.level}</span>
+									<span class="badge">${it.minutes} min</span>
+									<span class="badge">${it.points} pts</span>
+								</div>
+								<div class="read">${isRead ? "Read ✓" : ""}</div>
+							</div>
+							<h3>${it.title}</h3>
+							<p>${it.description}</p>
+						`;
+						grid.appendChild(a);
+					}
+				}
+
+				function getLengthCategory(minutes: number): string {
+					if (minutes <= 5) return "quick";
+					if (minutes <= 15) return "medium";
+					return "long";
+				}
+
+				function getPointsCategory(points: number): string {
+					if (points <= 15) return "low";
+					if (points <= 30) return "medium";
+					return "high";
+				}
+
+				function applyFilters() {
+					const q = (qInput.value || "").toLowerCase().trim();
+					const filtered = items.filter((it) => {
+						if (activeCat && it.category !== activeCat) return false;
+						if (activeLevel && it.level !== activeLevel) return false;
+						if (activeLength) {
+							const lengthCat = getLengthCategory(it.minutes);
+							if (lengthCat !== activeLength) return false;
+						}
+						if (activePoints) {
+							const pointsCat = getPointsCategory(it.points);
+							if (pointsCat !== activePoints) return false;
+						}
+						if (!q) return true;
+						const hay = `${it.title} ${it.description} ${it.category} ${(it.tags || []).join(" ")}`.toLowerCase();
+						return hay.includes(q);
+					});
+					render(filtered);
+				}
+
+				function setupFilterGroup(container: HTMLElement, filterType: "level" | "length" | "points") {
+					container.addEventListener("click", (e) => {
+						const target = e.target as HTMLElement | null;
+						const btn = target?.closest(`.segmented-button[data-${filterType}]`) as HTMLButtonElement | null;
+						if (!btn) return;
+						
+						const value = btn.getAttribute(`data-${filterType}`) || "";
+						if (filterType === "level") activeLevel = value;
+						else if (filterType === "length") activeLength = value;
+						else if (filterType === "points") activePoints = value;
+						
+						container.querySelectorAll(`.segmented-button[data-${filterType}]`).forEach((b) => b.setAttribute("data-active", "false"));
+						btn.setAttribute("data-active", "true");
+						applyFilters();
+					});
+				}
+
+				cats.addEventListener("click", (e) => {
+					const target = e.target as HTMLElement | null;
+					const btn = target?.closest("button[data-cat]") as HTMLButtonElement | null;
+					if (!btn) return;
+					activeCat = btn.getAttribute("data-cat") || "";
+					cats.querySelectorAll("button[data-cat]").forEach((b) => b.setAttribute("data-active", "false"));
+					btn.setAttribute("data-active", "true");
+					applyFilters();
+				});
+
+				setupFilterGroup(levelChips, "level");
+				setupFilterGroup(lengthChips, "length");
+				setupFilterGroup(pointsChips, "points");
+
+				qInput.addEventListener("input", applyFilters);
+
+				document.addEventListener("keydown", (e) => {
+					if (e.key === "/" && document.activeElement !== qInput) {
+						e.preventDefault();
+						qInput.focus();
+					}
+				});
+
+				applyFilters();
+			}
+		</script>
+	</body>
+</html>
