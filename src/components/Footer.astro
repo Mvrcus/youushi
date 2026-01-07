@@ -11,6 +11,10 @@ const today = new Date();
 <style>
 	footer {
 		padding: 3rem 1.5rem;
+		/* iOS 26 Safe Area: extend into home indicator area */
+		padding-bottom: calc(3rem + env(safe-area-inset-bottom, 0));
+		padding-left: env(safe-area-inset-left, 0);
+		padding-right: env(safe-area-inset-right, 0);
 		background: rgba(var(--white), 0.95);
 		backdrop-filter: blur(10px);
 		color: rgb(var(--gray));

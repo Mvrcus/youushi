@@ -16,9 +16,14 @@ const { title, description, image = '/jesus.png' } = Astro.props;
 
 <!-- Global Metadata -->
 <meta charset="utf-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1" />
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
 <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
 <meta name="generator" content={Astro.generator} />
+
+<!-- iOS Safari Edge-to-Edge / Liquid Glass Support -->
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+<meta name="theme-color" content="rgba(255,255,255,0.7)" />
 
 <!-- Font preloads -->
 <link rel="preload" href="/fonts/atkinson-regular.woff" as="font" type="font/woff" crossorigin />
